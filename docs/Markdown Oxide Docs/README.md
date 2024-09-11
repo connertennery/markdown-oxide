@@ -1,8 +1,31 @@
 
+**markdown-oxide**: Robust, Minimalist, Unbundled PKM for your favorite text-editor through the LSP.
 
-# Installation
+**[Quick Start](#quick-start)**
 
-Installation involves installing the markdown oxide language server and getting this language server configured for your editor. The process differs by which editor you are using markdown oxide with. 
+# Docs
+
+
+Here are some recommended links from our documentation website, <https://oxide.md>
+
+## Recommended Links
+
+* [What is markdown-oxide?](https://oxide.md/v0/Articles/Markdown-Oxide+v0): An overview of our PKM features to help you determine if markdown-oxide is for you
+* [Markdown-oxide getting-started guide](https://oxide.md/v0/Guides/Getting+started+with+Markdown+Oxide+Version+0): A guide to setting up your text editor, configuring the PKM, and using the features. 
+* [Features Reference](https://oxide.md/v0/references/v0+Features+Reference): An organized list of all features
+* [Configuration Reference](https://oxide.md/v0/references/v0+Configuration+Reference): Configuration information to reference
+    + [Default Config File](https://oxide.md/v0/References/v0+Configuration+Reference#Default+Config+File)
+
+# Quick Start
+
+Get started with Markdown-oxide as fast as possible! 
+
+Set up the PKM for your text editor...
+
+- [Neovim](#Neovim)
+- [VSCode](#VSCode)
+- [Zed](#Zed)
+- [Helix](#Helix)
 
 ## Neovim
 
@@ -50,16 +73,20 @@ Installation involves installing the markdown oxide language server and getting 
         -- An example nvim-lspconfig capabilities setting
         local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
         
-        -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
-        -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
-        capabilities.workspace = {
-            didChangeWatchedFiles = {
-              dynamicRegistration = true,
-            },
-        }
-        
         require("lspconfig").markdown_oxide.setup({
-            capabilities = capabilities, -- again, ensure that capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
+            -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
+            -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
+            capabilities = vim.tbl_deep_extend(
+                'force',
+                capabilities,
+                {
+                    workspace = {
+                        didChangeWatchedFiles = {
+                            dynamicRegistration = true,
+                        },
+                    },
+                }
+            ),
             on_attach = on_attach -- configure your on attach config
         })
         ```
@@ -117,7 +144,7 @@ Installation involves installing the markdown oxide language server and getting 
     - <details>
         <summary>(optional) Enable opening daily notes with natural langauge</summary>
 
-        Modify your lsp `on_attach` function to support opening daily notes with, for example, `:Daily two days ago` or `:Daily next monday`. The specification can be found [here](<Daily Notes#Opening Daily Notes>)
+        Modify your lsp `on_attach` function to support opening daily notes with, for example, `:Daily two days ago` or `:Daily next monday`. 
 
         ```lua
         -- setup Markdown Oxide daily note commands
@@ -137,15 +164,28 @@ Installation involves installing the markdown oxide language server and getting 
         ```
 
     </details>    
+- Ensure relevant plugins are installed:
+    * [Nvim CMP](https://github.com/hrsh7th/nvim-cmp): UI for using LSP completions
+    * [Telescope](https://github.com/nvim-telescope/telescope.nvim): UI helpful for the LSP references implementation
+        - Allows you to view and fuzzy match backlinks to files, headings, and blocks.
+    * [Lspsaga](https://github.com/nvimdev/lspsaga.nvim): UI generally helpful for LSP commands
+        + Allows you to edit linked markdown files in a popup window, for example. 
 
 
 ## VSCode
 
-Install the [vscode extension](https://marketplace.visualstudio.com/items?itemName=FelixZeller.markdown-oxide) (called `Markdown Oxide`). As for how the extension uses uses the language server, there are two options
+Install the [vscode extension](https://marketplace.visualstudio.com/items?itemName=FelixZeller.markdown-oxide) (called `Markdown Oxide`). As for how the extension uses the language server, there are two options
 1. Recommended: the extension will download the server's binary and use that
 2. The extension will use `markdown-oxide` from path. To install to your path, there are the following methods for VSCode:
 
-    - [[Setup#cargoInstall]]
+    - <details>
+         <summary>Cargo Install (from source)</summary>
+    
+        ```bash
+        cargo install --locked --git https://github.com/Feel-ix-343/markdown-oxide.git markdown-oxide
+        ```
+    
+    </details>
 
     - <details>
          <summary>Cargo binstall[1] (from hosted binary)</summary>
@@ -247,11 +287,3 @@ For Helix, all you must do is install the language server's binary to your path.
 </details>
 
 - Nix Unstable: `pkgs.markdown-oxide`
-
-
-# Configuration
-
-All of the configuration options are listed below. It may be helpful to copy paste this into the configuration file at the specified path, but you do not have to!
-
-![[v0 Configuration Reference]]
-
